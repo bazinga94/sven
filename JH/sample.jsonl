@@ -1,46 +1,112 @@
-[
-    {
-        "func_name": "build_board", 
-        "func_src_before": "def build_board(conn, game,size):\n    # we\"ll build the empty board, and then fill in with the move list that\n    # we get from the DB.\n    board = []\n    for i in range(size):\n        board.append([""]*size)\n\n\n    # search for all moves that have happenend during this game.\n    cursor = conn.cursor()\n    cursor.execute("SELECT x,y,letter FROM moves WHERE gameID = %d;" % game)\n\n    counts = {"X":0, "O":0}\n    for move in cursor.fetchall():\n        (x,y,letter) = move\n\n        x = int(x)\n        y = int(y)\n        assert x >= 0 and x < size\n        assert y >= 0 and y < size\n\n        assert letter in "XO"\n\n        assert board[x][y] == ""\n        board[x][y] = letter\n\n        counts[letter] += 1\n\n    cursor.close()\n\n    assert counts["X"] >= counts["O"]\n    assert counts["X"] <= counts["O"]+1\n\n    if counts["X"] == counts["O"]:\n        nextPlayer = 0\n    else:\n        nextPlayer = 1\n    letter = "XO"[nextPlayer]\n\n    return (board,nextPlayer,letter)", 
-        "func_src_after": "def build_board(conn, game,size):\n    # we\"ll build the empty board, and then fill in with the move list that\n    # we get from the DB.\n    board = []\n    for i in range(size):\n        board.append([""]*size)\n\n\n    # search for all moves that have happenend during this game.\n    cursor = conn.cursor()\n    cursor.execute("SELECT x,y,letter FROM moves WHERE gameID = %d;", (game,))\n\n    counts = {"X":0, "O":0}\n    for move in cursor.fetchall():\n        (x,y,letter) = move\n\n        x = int(x)\n        y = int(y)\n        assert x >= 0 and x < size\n        assert y >= 0 and y < size\n\n        assert letter in "XO"\n\n        assert board[x][y] == ""\n        board[x][y] = letter\n\n        counts[letter] += 1\n\n    cursor.close()\n\n    assert counts["X"] >= counts["O"]\n    assert counts["X"] <= counts["O"]+1\n\n    if counts["X"] == counts["O"]:\n        nextPlayer = 0\n    else:\n        nextPlayer = 1\n    letter = "XO"[nextPlayer]\n\n    return (board,nextPlayer,letter)", 
-        "line_changes": {
-            "deleted": [
-                {
-                    "line_no": 32, 
-                    "char_start": 763, 
-                    "char_end": 803, 
-                    "line": "    cursor.execute("SELECT x,y,letter FROM moves WHERE gameID = %d;" % game)\n"
-                }
-            ], 
-            "added": [
-                {
-                    "line_no": 32, 
-                    "char_start": 765, 
-                    "char_end": 805, 
-                    "line": "    cursor.execute("SELECT x,y,letter FROM moves WHERE gameID = %d;", (game,))\n"
-                    }
-            ]
-        }, 
-        "char_changes": {
-            "deleted": [
-                {
-                    "char_start": 371, 
-                    "char_end": 374, 
-                    "chars": " % "
-                }
-            ], 
-            "added": [
-                {
-                    "char_start": 371, 
-                    "char_end": 374, 
-                    "chars": ", ("
-                }, 
-                {
-                    "char_start": 378, 
-                    "char_end": 380, 
-                    "chars": ",)"
-                }
-            ]
-        }
-    }
-]
+// [
+//     {
+//         "func_name": "build_board", 
+//         "func_src_before": "def build_board(conn, game,size):\n    # we\"ll build the empty board, and then fill in with the move list that\n    # we get from the DB.\n    board = []\n    for i in range(size):\n        board.append([""]*size)\n\n\n    # search for all moves that have happenend during this game.\n    cursor = conn.cursor()\n    cursor.execute("SELECT x,y,letter FROM moves WHERE gameID = %d;" % game)\n\n    counts = {"X":0, "O":0}\n    for move in cursor.fetchall():\n        (x,y,letter) = move\n\n        x = int(x)\n        y = int(y)\n        assert x >= 0 and x < size\n        assert y >= 0 and y < size\n\n        assert letter in "XO"\n\n        assert board[x][y] == ""\n        board[x][y] = letter\n\n        counts[letter] += 1\n\n    cursor.close()\n\n    assert counts["X"] >= counts["O"]\n    assert counts["X"] <= counts["O"]+1\n\n    if counts["X"] == counts["O"]:\n        nextPlayer = 0\n    else:\n        nextPlayer = 1\n    letter = "XO"[nextPlayer]\n\n    return (board,nextPlayer,letter)", 
+//         "func_src_after": "def build_board(conn, game,size):\n    # we\"ll build the empty board, and then fill in with the move list that\n    # we get from the DB.\n    board = []\n    for i in range(size):\n        board.append([""]*size)\n\n\n    # search for all moves that have happenend during this game.\n    cursor = conn.cursor()\n    cursor.execute("SELECT x,y,letter FROM moves WHERE gameID = %d;", (game,))\n\n    counts = {"X":0, "O":0}\n    for move in cursor.fetchall():\n        (x,y,letter) = move\n\n        x = int(x)\n        y = int(y)\n        assert x >= 0 and x < size\n        assert y >= 0 and y < size\n\n        assert letter in "XO"\n\n        assert board[x][y] == ""\n        board[x][y] = letter\n\n        counts[letter] += 1\n\n    cursor.close()\n\n    assert counts["X"] >= counts["O"]\n    assert counts["X"] <= counts["O"]+1\n\n    if counts["X"] == counts["O"]:\n        nextPlayer = 0\n    else:\n        nextPlayer = 1\n    letter = "XO"[nextPlayer]\n\n    return (board,nextPlayer,letter)", 
+//         "line_changes": {
+//             "deleted": [
+//                 {
+//                     "line_no": 32, 
+//                     "char_start": 763, 
+//                     "char_end": 803, 
+//                     "line": "    cursor.execute("SELECT x,y,letter FROM moves WHERE gameID = %d;" % game)\n"
+//                 }
+//             ], 
+//             "added": [
+//                 {
+//                     "line_no": 32, 
+//                     "char_start": 765, 
+//                     "char_end": 805, 
+//                     "line": "    cursor.execute("SELECT x,y,letter FROM moves WHERE gameID = %d;", (game,))\n"
+//                     }
+//             ]
+//         }, 
+//         "char_changes": {
+//             "deleted": [
+//                 {
+//                     "char_start": 371, 
+//                     "char_end": 374, 
+//                     "chars": " % "
+//                 }
+//             ], 
+//             "added": [
+//                 {
+//                     "char_start": 371, 
+//                     "char_end": 374, 
+//                     "chars": ", ("
+//                 }, 
+//                 {
+//                     "char_start": 378, 
+//                     "char_end": 380, 
+//                     "chars": ",)"
+//                 }
+//             ]
+//         }
+//     }
+// ]
+
+
+
+// ========
+
+// [
+//     {
+//         "func_name": "sum", 
+//         "func_src_before": "   def sum():\n    arr = np.array([[1, 2, 3], [4, 5, 6]])\n      result = np.sum(arr, axis=0)  # Sum in column direction (axis=0)\n    print(result)", 
+//         "func_src_after": "   def sum():\n    df = pd.DataFrame([[1, 2, 3], [4, 5, 6]])\n      result = df.sum(axis=0)  # Sum in column direction (axis=0)\n    print(result)", 
+//         "line_changes": {
+//             "deleted": [
+//                 {
+//                     "line_no": 3, 
+//                     "char_start": 57, 
+//                     "char_end": 128, 
+//                     "line": "    arr = np.array([[1, 2, 3], [4, 5, 6]])\n"
+//                 }
+//             ], 
+//             "added": [
+//                 {
+//                     "line_no": 3, 
+//                     "char_start": 60, 
+//                     "char_end": 126, 
+//                     "line": "    df = pd.DataFrame([[1, 2, 3], [4, 5, 6]])\n"
+//                 }
+//             ]
+//         }, 
+//         "char_changes": {
+//             "deleted": [
+//                 {
+//                     "char_start": 18, 
+//                     "char_end": 32, 
+//                     "chars": "arr = np.array"
+//                 }, 
+//                 {
+//                     "char_start": 72, 
+//                     "char_end": 74, 
+//                     "chars": "np"
+//                 }, 
+//                 {
+//                     "char_start": 79, 
+//                     "char_end": 84, 
+//                     "chars": "arr, "
+//                 }
+//             ], 
+//             "added": [
+//                 {
+//                     "char_start": 18, 
+//                     "char_end": 35, 
+//                     "chars": "df = pd.DataFrame"
+//                 }, 
+//                 {
+//                     "char_start": 75, 
+//                     "char_end": 77, 
+//                     "chars": "df"
+//                 }
+//             ]
+//         }
+//     }
+// ]
+
+
+
+[{"func_name": "sum", "func_src_before": "def sum():\n    arr = np.array([[1, 2, 3], [4, 5, 6]])\n    result = np.sum(arr, axis=0)  # Sum in column direction (axis=0)\n    print(result)", "func_src_after": "def sum():\n    # comment test\n\n\n\n    \n    printtttt()\n    # comment test\n    df = pd.DataFrame([[1, 2, 3], [4, 5, 6]])\n    result = df.sum(axis=0)  # Sum in column direction (axis=0)\n    # comment test\n    print(result)", "line_changes": {"deleted": [{"line_no": 2, "char_start": 11, "char_end": 54, "line": "    arr = np.array([[1, 2, 3], [4, 5, 6]])\n"}, {"line_no": 3, "char_start": 54, "char_end": 123, "line": "    result = np.sum(arr, axis=0)  # Sum in column direction (axis=0)\n"}], "added": [{"line_no": 3, "char_start": 30, "char_end": 31, "line": "\n"}, {"line_no": 4, "char_start": 31, "char_end": 32, "line": "\n"}, {"line_no": 5, "char_start": 32, "char_end": 33, "line": "\n"}, {"line_no": 6, "char_start": 33, "char_end": 38, "line": "    \n"}, {"line_no": 7, "char_start": 38, "char_end": 54, "line": "    printtttt()\n"}, {"line_no": 9, "char_start": 73, "char_end": 119, "line": "    df = pd.DataFrame([[1, 2, 3], [4, 5, 6]])\n"}, {"line_no": 10, "char_start": 119, "char_end": 183, "line": "    result = df.sum(axis=0)  # Sum in column direction (axis=0)\n"}]}, "char_changes": {"deleted": [{"char_start": 15, "char_end": 29, "chars": "arr = np.array"}, {"char_start": 67, "char_end": 69, "chars": "np"}, {"char_start": 74, "char_end": 79, "chars": "arr, "}], "added": [{"char_start": 15, "char_end": 94, "chars": "# comment test\n\n\n\n    \n    printtttt()\n    # comment test\n    df = pd.DataFrame"}, {"char_start": 132, "char_end": 134, "chars": "df"}, {"char_start": 183, "char_end": 202, "chars": "    # comment test\n"}]}}]
+

@@ -1,0 +1,52 @@
+{
+    "func_name": "build_board",
+    "func_src_before": "def build_board(conn, game,size):\n    # we'll build the empty board, and then fill in with the move list that\n    # we get from the DB.\n    board = []\n    for i in range(size):\n        board.append([\"\"]*size)\n\n\n    # search for all moves that have happenend during this game.\n    cursor = conn.cursor()\n    cursor.execute(\"SELECT x,y,letter FROM moves WHERE gameID = %d;\" % game)\n\n    counts = {\"X\":0, \"O\":0}\n    for move in cursor.fetchall():\n        (x,y,letter) = move\n\n        x = int(x)\n        y = int(y)\n        assert x >= 0 and x < size\n        assert y >= 0 and y < size\n\n        assert letter in \"XO\"\n\n        assert board[x][y] == \"\"\n        board[x][y] = letter\n\n        counts[letter] += 1\n\n    cursor.close()\n\n    assert counts[\"X\"] >= counts[\"O\"]\n    assert counts[\"X\"] <= counts[\"O\"]+1\n\n    if counts[\"X\"] == counts[\"O\"]:\n        nextPlayer = 0\n    else:\n        nextPlayer = 1\n    letter = \"XO\"[nextPlayer]\n\n    return (board,nextPlayer,letter)",
+    "func_src_after": "def build_board(conn, game,size):\n    # we'll build the empty board, and then fill in with the move list that\n    # we get from the DB.\n    board = []\n    for i in range(size):\n        board.append([\"\"]*size)\n\n\n    # search for all moves that have happenend during this game.\n    cursor = conn.cursor()\n    cursor.execute(\"SELECT x,y,letter FROM moves WHERE gameID = %d;\", (game,))\n\n    counts = {\"X\":0, \"O\":0}\n    for move in cursor.fetchall():\n        (x,y,letter) = move\n\n        x = int(x)\n        y = int(y)\n        assert x >= 0 and x < size\n        assert y >= 0 and y < size\n\n        assert letter in \"XO\"\n\n        assert board[x][y] == \"\"\n        board[x][y] = letter\n\n        counts[letter] += 1\n\n    cursor.close()\n\n    assert counts[\"X\"] >= counts[\"O\"]\n    assert counts[\"X\"] <= counts[\"O\"]+1\n\n    if counts[\"X\"] == counts[\"O\"]:\n        nextPlayer = 0\n    else:\n        nextPlayer = 1\n    letter = \"XO\"[nextPlayer]\n\n    return (board,nextPlayer,letter)",
+    "commit_link": "github.com/russ-lewis/ttt_-_python_cgi/commit/6096f43fd4b2d91211eec4614b7960c0816900da",
+    "file_name": "cgi/common.py",
+    "vul_type": "cwe-089",
+    "line_changes": {
+      "deleted": [
+        {
+          "line_no": 11,
+          "char_start": 303,
+          "char_end": 380,
+          "line": "    cursor.execute(\"SELECT x,y,letter FROM moves WHERE gameID = %d;\" % game)\n"
+        }
+      ],
+      "added": [
+        {
+          "line_no": 11,
+          "char_start": 303,
+          "char_end": 382,
+          "line": "    cursor.execute(\"SELECT x,y,letter FROM moves WHERE gameID = %d;\", (game,))\n"
+        }
+      ]
+    },
+    "char_changes": {
+      "deleted": [
+        {
+          "char_start": 371,
+          "char_end": 373,
+          "chars": " %"
+        }
+      ],
+      "added": [
+        {
+          "char_start": 371,
+          "char_end": 372,
+          "chars": ","
+        },
+        {
+          "char_start": 373,
+          "char_end": 374,
+          "chars": "("
+        },
+        {
+          "char_start": 378,
+          "char_end": 380,
+          "chars": ",)"
+        }
+      ]
+    }
+  }

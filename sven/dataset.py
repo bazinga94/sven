@@ -8,6 +8,7 @@ from torch.utils.data import Dataset
 from sven.constant import BINARY_LABELS, SEC_LABEL, VUL_LABEL, PROMPTS, CWES_TRAINED, CWES_TRAINED_SUBSET
 from sven.utils import get_indent
 
+# Base Dataset class for processing training data
 class DatasetBase(Dataset):
     def __init__(self, args, tokenizer, mode):
         self.args = args
@@ -54,6 +55,7 @@ class DatasetBase(Dataset):
     def __getitem__(self, item):
         return tuple(torch.tensor(t) for t in self.dataset[item])
 
+# Dataset class for Prefix-based training
 class PrefixDataset(DatasetBase):
     def __init__(self, args, tokenizer, mode):
         super().__init__(args, tokenizer, mode)
@@ -86,6 +88,7 @@ class PrefixDataset(DatasetBase):
 
         return tokens, weights, control_id, vul_id
 
+# Dataset class for Prompt-based training
 class TextPromptDataset(DatasetBase):
     def __init__(self, args, tokenizer, mode):
         super().__init__(args, tokenizer, mode)

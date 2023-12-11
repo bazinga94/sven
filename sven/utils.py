@@ -269,7 +269,7 @@ def parse_diff(file_name, src_before, src_after, diff):
             if func_before is None: continue
             func_i_after, func_after = search_for_func(src_after, funcs_after, line_no_after+1 if line_no_before == func_before.start_line else line_no_after, func_i_after)
             if func_after is None: continue
-            if func_before.name != func_after.name: continue
+            # if func_before.name != func_after.name: continue
             func = modified_funcs.get_func(func_before, func_after, src_before, src_after)
             func.add_deletion(line_no_before, line[1:])
 
@@ -280,7 +280,7 @@ def parse_diff(file_name, src_before, src_after, diff):
             if func_before is None: continue
             func_i_after, func_after = search_for_func(src_after, funcs_after, line_no_after, func_i_after)
             if func_after is None: continue
-            if func_before.name != func_after.name: continue
+            # if func_before.name != func_after.name: continue
             func = modified_funcs.get_func(func_before, func_after, src_before, src_after)
             func.add_addition(line_no_after, line[1:])
 

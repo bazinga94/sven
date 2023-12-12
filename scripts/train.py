@@ -91,12 +91,16 @@ def get_args():
     return args
 
 def main():
+    # 인자 확인
     args = get_args()
     set_logging(args, os.path.join(args.output_dir, 'train.log'))
+    # cuda or cpu
     set_devices(args)
+    # seed?
     set_seed(args)
 
     if args.model_type == 'prefix':
+        # we should focus on prefix
         trainer = PrefixTrainer(args)
     elif args.model_type == 'text':
         trainer = TextPromptTrainer(args)

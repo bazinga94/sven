@@ -253,6 +253,7 @@ def model_from_pretrained(lm_path, model_type, config):
         if model_type == 'lm':
             model_class = CodeGenForCausalLM
         elif model_type == 'prefix':
+            # We are gonna use this model class?!
             model_class = CodeGenPrefixCausalLM
         else:
             assert False
@@ -284,7 +285,16 @@ def model_from_pretrained(lm_path, model_type, config):
     if config is None:
         model = model_class.from_pretrained(lm_path, **kwargs)
     else:
+        # we have a config
+        # this a model for fine tuning
+        # lm_path is the path where the pre-trained weights of the model to be fine-tuned are stored.
+        # config represents the configuration of the model, providing information about the architecture, tokenizer, hyperparameters, and more.
+        # **kwargs are used to supply additional parameters required for the initialization of the specific model class.
         model = model_class.from_pretrained(lm_path, **kwargs, config=config)
+
+        # lm_path는 미세 조정하려는 모델의 사전 훈련된 가중치가 저장된 경로입니다.
+        # config는 모델의 설정을 나타냅니다. 이 설정을 통해 모델의 아키텍처, 토크나이저 정보, 하이퍼파라미터 등을 조정할 수 있습니다.
+        # **kwargs는 해당 모델 클래스의 초기화에 필요한 추가적인 매개변수를 제공하는 데 사용됩니다.
 
     return model
 
@@ -312,22 +322,32 @@ def save_model(model, path, args):
 
 def load_model(model_type, path, is_training, args):
     logging.set_verbosity_error()
+    # load the tokenizer for a pre-trained language model
+    # "AutoTokenizer" automatically selects an appropriate tokenizer
+    # It loads the pre-trained model from the given path and creates a tokenizer tailored to that model
     tokenizer = AutoTokenizer.from_pretrained(path)
-    if tokenizer.eos_token_id is None:
+    # ??
+    # EOS (End of Sequence)
+    # BOS (Beginning of Sequence) 
+    if tokenizer.eos_token_id is None:  
         tokenizer.eos_token_id = tokenizer.bos_token_id
+    # PAD (Padding)
     if tokenizer.pad_token_id is None:
         tokenizer.pad_token_id = tokenizer.eos_token_id
 
     if model_type == 'lm':
         config = config_from_pretrained(path, path)
         model = model_from_pretrained(path, model_type, config)
+    # are we going to use prefix model type?
     elif model_type == 'prefix':
+        # is_training = True
         if is_training:
             lm_path = path
             lm_config = config_from_pretrained(lm_path, lm_path)
             lm_config.n_prefix_token = args.n_prefix_token
             lm_config.prefix_dropout = args.dropout
             lm_config.n_control = 2
+            # get pre trained model what we need now
             model = model_from_pretrained(lm_path, model_type, lm_config)
         else:
             lm_path_file = os.path.join(path, 'lm.txt')
@@ -345,7 +365,11 @@ def load_model(model_type, path, is_training, args):
     else:
         assert False
 
+    # adjusting the token embedding size of the model 
+    # based on the number of tokens used by the tokenizer
     model.resize_token_embeddings(len(tokenizer))
+    # parallelization for GPU or distributed training
+    # it may be unnecessary or need to change based on CPU training
     input_device = parallelize_model(model, args)
     return tokenizer, model, input_device
 

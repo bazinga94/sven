@@ -63,19 +63,23 @@ class TrainerBase:
         return ', '.join(ss)
 
     def run(self):
-        self.load_model()
-        self.load_dataset()
+        self.load_model()       # load CodeGen model
+        self.load_dataset()     # load PrefixDataset
 
         self.args.logger.info(f'Training args {self.args}')
 
+        # Below code is about training. Maybe we don't need to chage??
         batch_size = 1
+        # random sampling
         train_sampler = RandomSampler(self.dataset)
+        # split the training dataset into minibatches and load them
         train_dataloader = DataLoader(self.dataset, sampler=train_sampler, batch_size=batch_size, drop_last=True)
 
         total_samples = len(self.dataset)
         batch_size = batch_size * self.args.grad_acc_steps
         total_steps = total_samples // batch_size * self.args.num_train_epochs
 
+        # parameters that not execute weight decay..?
         no_decay = ['bias', 'LayerNorm.weight']
         optimizer_grouped_parameters = [
             {'params': [p for n, p in self.model.named_parameters() if (not any(nd in n for nd in no_decay)) and p.requires_grad],
@@ -83,6 +87,7 @@ class TrainerBase:
             {'params': [p for n, p in self.model.named_parameters() if any(nd in n for nd in no_decay) and p.requires_grad],
             'weight_decay': 0.0}
         ]
+        # optimizer AdamW
         optimizer = AdamW(optimizer_grouped_parameters, lr=self.args.learning_rate, eps=self.args.adam_epsilon)
         scheduler = get_linear_schedule_with_warmup(optimizer, num_warmup_steps=self.args.warmup_steps,
                                                 num_training_steps=total_steps)
@@ -107,11 +112,13 @@ class TrainerBase:
         self.model.train()
         for idx in range(self.args.num_train_epochs):
             for step, batch in enumerate(train_dataloader):
+                # call "def __getitem(self, item):" when accessing batch
                 loss, loss_dict = self.step(batch)
                 if self.args.grad_acc_steps > 1:
                     loss = loss / self.args.grad_acc_steps
                     for key in loss_dict:
                         loss_dict[key] = loss_dict[key] / self.args.grad_acc_steps
+                # backpropagation
                 loss.backward()
                 torch.nn.utils.clip_grad_norm_(self.model.parameters(), self.args.max_grad_norm)
                 self.add_to_loss_dict(acc_loss_dict, loss_dict)
@@ -190,16 +197,20 @@ class PrefixTrainer(TrainerBase):
     def __init__(self, args):
         super().__init__(args)
 
+    # first load model
     def load_model(self):
         self.tokenizer, self.model, self.input_device = load_model('prefix', self.args.pretrain_dir, True, self.args)
         for n, p in self.model.named_parameters():
             if n.startswith('prefix_params'):
+                # our option
                 p.requires_grad = True
             else:
                 p.requires_grad = False
+        # train the model
         self.model.train()
 
     def load_dataset(self):
+        # jsonl 파일을 통해 PrefixDataset을 생성
         self.dataset = PrefixDataset(self.args, self.tokenizer, 'train')
         self.val_dataset = PrefixDataset(self.args, self.tokenizer, 'val')
 

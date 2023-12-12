@@ -2,6 +2,14 @@ SEC_LABEL = 'sec'
 VUL_LABEL = 'vul'
 BINARY_LABELS = [SEC_LABEL, VUL_LABEL]
 
+PANDAS_LABEL = 'pandas'
+NUMPY_LABEL = 'numpy'
+LIBRARY_LABELS = [PANDAS_LABEL, NUMPY_LABEL]
+
+ENPM_TRAINED = [
+    'sample'
+]
+
 CWES_TRAINED = [
     'cwe-089',
     'cwe-125',

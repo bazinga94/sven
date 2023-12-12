@@ -210,7 +210,7 @@ class PrefixTrainer(TrainerBase):
         self.model.train()
 
     def load_dataset(self):
-        # jsonl 파일을 통해 PrefixDataset을 생성
+        # create PrefixDataset by jsonl files
         self.dataset = PrefixDataset(self.args, self.tokenizer, 'train')
         self.val_dataset = PrefixDataset(self.args, self.tokenizer, 'val')
 

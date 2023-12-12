@@ -5,7 +5,7 @@ import torch
 import random
 from torch.utils.data import Dataset
 
-from sven.constant import BINARY_LABELS, SEC_LABEL, VUL_LABEL, PROMPTS, CWES_TRAINED, CWES_TRAINED_SUBSET
+from sven.constant import BINARY_LABELS, SEC_LABEL, VUL_LABEL, PROMPTS, CWES_TRAINED, CWES_TRAINED_SUBSET, ENPM_TRAINED
 from sven.utils import get_indent
 
 # Base Dataset class for processing training data
@@ -22,11 +22,13 @@ class DatasetBase(Dataset):
                 vul_types = CWES_TRAINED_SUBSET
             else:
                 # if we do not fix the code or args vul_types will be CWES_TRAINED
-                vul_types = CWES_TRAINED
+                # vul_types = CWES_TRAINED
+                vul_types = ENPM_TRAINED
+
         # we might have only one vul_types
         # we should delete or change the i, vul_type
         # vul_type is only fo read json
-        # but i is used in get_tensor() function
+        # @@@@@ but "i" is used in get_tensor() function 
         for i, vul_type in enumerate(vul_types):
             with open(os.path.join(args.data_dir, mode, f'{vul_type}.jsonl')) as f:
                 lines = f.readlines()
@@ -49,9 +51,9 @@ class DatasetBase(Dataset):
                     diffs = [diff_j['char_changes']['added'], diff_j['char_changes']['deleted']]
                 # default is mix
                 # they adopt a mixing strategy
-                # that utilizes character level masks for secure programs 
-                # and line-level masks for unsafe programs.(most precise way? they said)
-                # in our case, line or prog might be valid(let's check the diff from our data)
+                # that utilizes character level masks for secure codes 
+                # and line-level masks for unsafe codes(this is the most precise way? they said)
+                # @@@@@ in our case, line or prog might be valid(let's check the diff from our data)
                 elif self.args.diff_level == 'mix':
                     diffs = [diff_j['char_changes']['added'], diff_j['line_changes']['deleted']]
                 else:
@@ -66,6 +68,7 @@ class DatasetBase(Dataset):
     def __len__(self):
         return len(self.dataset)
 
+    # call during an iteration of DatasetBase
     def __getitem__(self, item):
         return tuple(torch.tensor(t) for t in self.dataset[item])
 
@@ -96,7 +99,7 @@ class PrefixDataset(DatasetBase):
         # check token length?
         if len(tokens) > self.args.max_num_tokens: return None
 
-        # ??, can't find info about cwe-invalid, cwe-valid
+        # @@@@@ ??, can't find info from the project's code about cwe-invalid, cwe-valid
         min_changed_tokens = (2 if self.args.vul_type in ('cwe-invalid', 'cwe-valid') else 1)
         # if diff_level == 'prog':
         if changes is None:

@@ -35,10 +35,13 @@ class DatasetBase(Dataset):
             # each line is equal to one json object
             for line in lines:
                 diff_j = json.loads(line)
-                if diff_j['file_name'].endswith('.py'):
-                    lang = 'py'
-                else:
-                    lang = 'c'
+                # if diff_j['file_name'].endswith('.py'):
+                #     lang = 'py'
+                # else:
+                #     lang = 'c'
+
+                # we only use python code
+                lang = 'py'
                 # we should adjust to our labels
                 # labels = ["pandas", "numpy"]
                 labels = [SEC_LABEL, VUL_LABEL]
